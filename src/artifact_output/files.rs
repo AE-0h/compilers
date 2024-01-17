@@ -1,6 +1,7 @@
 use crate::contracts::VersionedContract;
 use std::{
     collections::HashMap,
+    fmt,
     hash::Hash,
     ops::{Deref, DerefMut},
     path::{Path, PathBuf},
@@ -38,6 +39,12 @@ impl<'a> DerefMut for MappedArtifactFiles<'a> {
     }
 }
 
+impl<'a> fmt::Debug for MappedArtifactFiles<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "MappedArtifactFiles {{ files: {:?} }}", self.files)
+    }
+}
+
 /// Represents the targeted path of a contract or multiple contracts
 ///
 /// To account for case-sensitivity we identify it via lowercase path
@@ -57,4 +64,14 @@ pub struct MappedContract<'a> {
     pub name: &'a str,
     pub contract: &'a VersionedContract,
     pub artifact_path: PathBuf,
+}
+
+impl<'a> fmt::Debug for MappedContract<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "MappedContract {{ file: {}, name: {}, contract: {:?}, artifact_path: {:?} }}",
+            self.file, self.name, self.contract, self.artifact_path
+        )
+    }
 }

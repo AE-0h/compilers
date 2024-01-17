@@ -89,7 +89,7 @@ impl VersionedContracts {
                 }
             }
         }
-
+        println!("{:?}", output_files);
         output_files
     }
 
