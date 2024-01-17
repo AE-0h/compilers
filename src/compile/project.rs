@@ -100,6 +100,7 @@
 //! Recompiling a project with cache enabled detects all files that meet these criteria and provides
 //! solc with only these dirty files instead of the entire source set.
 
+use crate::utils;
 use crate::{
     artifact_output::Artifacts,
     artifacts::{Settings, VersionedFilteredSources, VersionedSources},
@@ -218,6 +219,8 @@ impl<'a, T: ArtifactOutput> ProjectCompiler<'a, T> {
         // drive the compiler statemachine to completion
         let mut output = self.preprocess()?.compile()?.write_artifacts()?.write_cache()?;
 
+        let output_name: &str = "output.json";
+        let _hi = utils::write_json_file(&output.compiler_output, &output_name, 64 * 1024);
         if slash_paths {
             // ensures we always use `/` paths
             output.slash_paths();

@@ -1,4 +1,8 @@
 use crate::contracts::VersionedContract;
+use serde::{
+    ser::{SerializeStruct, Serializer},
+    Serialize,
+};
 use std::{
     collections::HashMap,
     fmt,
@@ -45,10 +49,21 @@ impl<'a> fmt::Debug for MappedArtifactFiles<'a> {
     }
 }
 
+impl<'a> Serialize for MappedArtifactFiles<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("MappedArtifactFiles", 1)?;
+        state.serialize_field("files", &self.files)?;
+        state.end()
+    }
+}
+
 /// Represents the targeted path of a contract or multiple contracts
 ///
 /// To account for case-sensitivity we identify it via lowercase path
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Hash, PartialEq, Eq, Serialize)]
 pub struct MappedArtifactFile {
     lower_case_path: String,
 }
@@ -59,6 +74,7 @@ impl MappedArtifactFile {
     }
 }
 
+#[derive(Serialize)]
 pub struct MappedContract<'a> {
     pub file: &'a str,
     pub name: &'a str,

@@ -8,6 +8,8 @@ use crate::{
 use md5::Digest;
 use semver::Version;
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
+use std::fs::File;
+use std::io::Write;
 use std::{
     collections::{BTreeMap, HashSet},
     fmt, fs,
@@ -1548,6 +1550,13 @@ pub struct CompilerOutput {
 }
 
 impl CompilerOutput {
+    /// Writes the compiler output to a JSON file named "output.json"
+    pub fn write_to_json(&self, output_dir: &Path) -> std::io::Result<()> {
+        let file_path = output_dir.join("output.json");
+        let mut file = File::create(file_path)?;
+        let json = serde_json::to_string_pretty(self)?;
+        write!(file, "{}", json)
+    }
     /// Whether the output contains a compiler error
     pub fn has_error(&self) -> bool {
         self.errors.iter().any(|err| err.severity.is_error())

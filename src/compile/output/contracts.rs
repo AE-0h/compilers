@@ -8,6 +8,8 @@ use crate::{
 };
 use semver::Version;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::fs::File;
+use std::io::Write;
 use std::{
     collections::BTreeMap,
     iter::FromIterator,
@@ -89,7 +91,16 @@ impl VersionedContracts {
                 }
             }
         }
-        println!("{:?}", output_files);
+
+        let json =
+            serde_json::to_string_pretty(&output_files).expect("Failed to serialize output_files");
+
+        let json_file_path = Path::new("output_files.json");
+
+        let mut file = File::create(json_file_path).expect("Failed to create JSON file");
+        file.write_all(json.as_bytes()).expect("Failed to write JSON to file");
+
+        println!("Wrote output_files.json");
         output_files
     }
 
