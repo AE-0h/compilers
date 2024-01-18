@@ -1,11 +1,6 @@
 use crate::contracts::VersionedContract;
-use serde::{
-    ser::{SerializeStruct, Serializer},
-    Serialize,
-};
 use std::{
     collections::HashMap,
-    fmt,
     hash::Hash,
     ops::{Deref, DerefMut},
     path::{Path, PathBuf},
@@ -43,27 +38,10 @@ impl<'a> DerefMut for MappedArtifactFiles<'a> {
     }
 }
 
-impl<'a> fmt::Debug for MappedArtifactFiles<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "MappedArtifactFiles {{ files: {:?} }}", self.files)
-    }
-}
-
-impl<'a> Serialize for MappedArtifactFiles<'a> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("MappedArtifactFiles", 1)?;
-        state.serialize_field("files", &self.files)?;
-        state.end()
-    }
-}
-
 /// Represents the targeted path of a contract or multiple contracts
 ///
 /// To account for case-sensitivity we identify it via lowercase path
-#[derive(Debug, Hash, PartialEq, Eq, Serialize)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct MappedArtifactFile {
     lower_case_path: String,
 }
@@ -74,20 +52,9 @@ impl MappedArtifactFile {
     }
 }
 
-#[derive(Serialize)]
 pub struct MappedContract<'a> {
     pub file: &'a str,
     pub name: &'a str,
     pub contract: &'a VersionedContract,
     pub artifact_path: PathBuf,
-}
-
-impl<'a> fmt::Debug for MappedContract<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "MappedContract {{ file: {}, name: {}, contract: {:?}, artifact_path: {:?} }}",
-            self.file, self.name, self.contract, self.artifact_path
-        )
-    }
 }
